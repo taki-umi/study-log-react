@@ -1,39 +1,34 @@
 import { useEffect, useState } from "react"
 
-import { getAllTodos } from "./lib/clients/supabase"
+import { getAllTodos, insertTodo } from "./lib/clients/supabase"
 
 export const App = () => {
-  // TODO: 仮テストデータ、Supabase接続後に削除
-  const testRecords = [
-    {
-      id: 1,
-      title: "React学習",
-      time: 10,
-    },
-    {
-      id: 2,
-      title: "英語",
-      time: 2,
-    },
-    {
-      id: 3,
-      title: "筋トレ座学",
-      time: 4,
-    },
-  ]
-
-  useEffect(() => {
-    const todos = getAllTodos()
-    console.log(todos)
-  }, [])
-
-  const [records, setRecords] = useState(testRecords)
+  const [records, setRecords] = useState([])
   const [title, setTitle] = useState("")
   const [studyTime, setStudyTime] = useState(0)
-  const [totalStudyTime, setTotalStudyTime] = useState(() => {
-    const preIntTime = testRecords.map((r) => parseInt(r.time))
-    return preIntTime.reduce((pre, cur) => pre + cur, 0)
-  })
+  const [totalStudyTime, setTotalStudyTime] = useState(0)
+
+  // 初回表示時処理
+  useEffect(() => {
+    fethchTodos()
+  }, [])
+
+  const fethchTodos = async () => {
+    const todos = await getAllTodos()
+    if (todos) {
+      setRecords(
+        todos.map((t) => {
+          return {
+            title: t.title,
+            time: t.time,
+          }
+        }),
+      )
+
+      const preIntTime = todos.map((r) => parseInt(r.time))
+      setTotalStudyTime(preIntTime.reduce((pre, cur) => pre + cur, 0))
+    }
+  }
 
   const onChangeTitle = (e) => setTitle(e.target.value)
   const onChangeStudyTitle = (e) => setStudyTime(e.target.value)
@@ -43,6 +38,7 @@ export const App = () => {
       setError("入力されていない項目があります。")
       return
     }
+    addTodo(title, studyTime)
     const newRecords = [...records, { title: title, time: studyTime }]
     setRecords(newRecords)
     setTitle("")
@@ -53,6 +49,10 @@ export const App = () => {
       const newTotalTimes = [...newRecords.map((r) => parseInt(r.time))]
       return newTotalTimes.reduce((pre, cur) => pre + cur, 0)
     })
+  }
+
+  const addTodo = async (title, studyTime) => {
+    insertTodo(title, studyTime)
   }
 
   const [error, setError] = useState("")

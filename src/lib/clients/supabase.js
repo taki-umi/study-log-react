@@ -1,13 +1,22 @@
 import { createClient } from "@supabase/supabase-js"
 
 export const supabase = createClient(
-  // import.meta.env.SUPABASE_URL,
-  // import.meta.env.SUPABASE_PUBLISHABLE_KEY,
-  "https://hzkrfdqsnmsnvtzgduzq.supabase.co",
-  "sb_publishable_S03rpWw2jVvo88T7eJSs4Q_CfZKbayk",
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
 )
 
 export const getAllTodos = async () => {
-  const todos = await supabase.from("study-record").select("*")
-  return todos.data
+  const { data, error } = await supabase.from("study-record").select("*")
+  if (error) {
+    console.log("getAllTodos error: ", error)
+    return []
+  }
+  return data
+}
+
+export const insertTodo = async (title, time) => {
+  const { error } = await supabase.from("study-record").insert({title: title, time: time})
+  if (error) {
+    console.log(error)
+  }
 }
