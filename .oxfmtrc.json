@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [
+    "coverage",
+    "dist",
+    "pnpm-lock.yaml",
+    "pnpm-workspace.yaml",
+    "temp",
+    "**/public/*"
+  ],
+  "printWidth": 80, // oxfmt default は 100
+  "semi": false,
+  "sortPackageJson": {
+    // sort-package-json の代替
+    "sortScripts": true
+  }
+}
