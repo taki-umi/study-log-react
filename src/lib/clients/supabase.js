@@ -15,8 +15,19 @@ export const getAllTodos = async () => {
 }
 
 export const insertTodo = async (title, time) => {
-  const { error } = await supabase.from("study-record").insert({title: title, time: time})
+  const { data, error } = await supabase
+    .from("study-record")
+    .insert({ title: title, time: time })
   if (error) {
     console.log(error)
   }
+  return data
+}
+
+export const deleteTodo = async (id) => {
+  const { data, error } = await supabase
+    .from("study-record")
+    .delete()
+    .eq("id", id)
+  return data
 }
