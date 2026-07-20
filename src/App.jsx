@@ -15,23 +15,17 @@ export const App = () => {
       setIsLoading(true)
       const todos = await getAllTodos()
       setRecords(todos)
-
-      const preIntTime = todos.map((r) => parseInt(r.time))
-      setTotalStudyTime(preIntTime.reduce((pre, cur) => pre + cur, 0))
       setIsLoading(false)
     }
     fethchTodos()
   }, [])
 
-  const fethchTodos = async () => {
-    const todos = await getAllTodos()
-    setRecords(todos)
-
-    const preIntTime = todos.map((r) => parseInt(r.time))
+  // 合計学習時間再計算
+  useEffect(() => {
+    const preIntTime = records.map((r) => parseInt(r.time))
     setTotalStudyTime(preIntTime.reduce((pre, cur) => pre + cur, 0))
+  }, [records])
 
-    setIsLoading(false)
-  }
   const onChangeTitle = (e) => setTitle(e.target.value)
   const onChangeStudyTitle = (e) => setStudyTime(e.target.value)
 
@@ -41,16 +35,18 @@ export const App = () => {
       return
     }
     const addTodo = await insertTodo(title, studyTime)
-    console.log(addTodo)
-    fethchTodos()
+    const newTodos = [...records, ...addTodo]
+    setRecords(newTodos)
     setTitle("")
     setStudyTime(0)
     setError("")
   }
 
   const onClickRemove = async (id) => {
-    await deleteTodo(id)
-    fethchTodos()
+    const deleteTodoId = await deleteTodo(id)
+    console.log(deleteTodoId)
+    const newTodos = records.filter((todo) => todo.id !== id)
+    setRecords(newTodos)
   }
 
   const [error, setError] = useState("")
@@ -87,7 +83,7 @@ export const App = () => {
           </div>
           {records.map((record, index) => (
             <div
-              key={record.title + index}
+              key={record.id + index}
               style={{ display: "flex", alignItems: "center" }}
             >
               <p>

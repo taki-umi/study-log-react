@@ -18,6 +18,7 @@ export const insertTodo = async (title, time) => {
   const { data, error } = await supabase
     .from("study-record")
     .insert({ title: title, time: time })
+    .select()
   if (error) {
     console.log(error)
   }
@@ -29,5 +30,6 @@ export const deleteTodo = async (id) => {
     .from("study-record")
     .delete()
     .eq("id", id)
+    .select()
   return data
 }
